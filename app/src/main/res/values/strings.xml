@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SensorsWithFrags</string>
+    <string name="title_accelerometer">Accelerometr</string>
+    <string name="title_gyroscope">Gyroscope</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="registration_button">Start</string>
+    <string name="results">x:  y:  z:  </string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+</resources>
