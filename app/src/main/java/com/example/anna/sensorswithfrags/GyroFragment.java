@@ -98,6 +98,9 @@ public class GyroFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+        if (getActivity()==null){
+            return;
+        }
         if (isRecording) {
             if (startTime == 0){
                 startTime = (int) (sensorEvent.timestamp/1000000000);

@@ -1,7 +1,7 @@
 package com.example.anna.sensorswithfrags;
 
 
-import java.util.ArrayList;
+        import java.util.ArrayList;
 
 
 public class Podometer {
@@ -12,11 +12,11 @@ public class Podometer {
 
         double[] vectorLength = new double[yValues.size()];
 
-            for (int i = 0; i < yValues.size(); i++) {
+        for (int i = 0; i < yValues.size(); i++) {
 
-                double length = Math.sqrt(xValues.get(i) * xValues.get(i) + yValues.get(i) * yValues.get(i) + zValues.get(i) * zValues.get(i));
+            double length = Math.sqrt(xValues.get(i) * xValues.get(i) + yValues.get(i) * yValues.get(i) + zValues.get(i) * zValues.get(i));
 
-                vectorLength[i] = length;
+            vectorLength[i] = length;
 
 
             for (double d : vectorLength) {
