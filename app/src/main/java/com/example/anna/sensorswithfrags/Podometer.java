@@ -1,20 +1,20 @@
 package com.example.anna.sensorswithfrags;
 
 
-        import java.util.ArrayList;
+        import org.achartengine.model.XYSeries;
 
 
 public class Podometer {
 
-    public int stepCount(ArrayList<Double> xValues, ArrayList<Double> yValues, ArrayList<Double> zValues) {
+    public int stepCount(XYSeries xValues, XYSeries yValues, XYSeries zValues) {
         int numberOfSteps = 0;
         double mean = 0;
 
-        double[] vectorLength = new double[yValues.size()];
+        double[] vectorLength = new double[yValues.getItemCount()];
 
-        for (int i = 0; i < yValues.size(); i++) {
+        for (int i = 0; i < yValues.getItemCount(); i++) {
 
-            double length = Math.sqrt(xValues.get(i) * xValues.get(i) + yValues.get(i) * yValues.get(i) + zValues.get(i) * zValues.get(i));
+            double length = Math.sqrt(xValues.getY(i) * xValues.getY(i) + yValues.getY(i) * yValues.getY(i) + zValues.getY(i) * zValues.getY(i));
 
             vectorLength[i] = length;
 
@@ -27,5 +27,6 @@ public class Podometer {
         }
         return numberOfSteps;
     }
+
 
 }

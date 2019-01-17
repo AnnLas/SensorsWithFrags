@@ -57,15 +57,26 @@ public class AcceleroFragment extends Fragment implements SensorEventListener {
     private ArrayList<Double> xResults;
     private static String TAG = "AcceleroFragment";
     private XYMultipleSeriesDataset dataset;
+    private static final String X_RESULTS_KEY = "xArray";
+    private static final String Y_RESULTS_KEY = "yArray";
+    private static final String Z_RESULTS_KEY = "zArray";
+    private static final String TIME_KEY = "time";
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        yResults = new ArrayList<>();
+        zResults = new ArrayList<>();
+        xResults = new ArrayList<>();
         if (savedInstanceState != null) {
-            dataset = (XYMultipleSeriesDataset) savedInstanceState.getSerializable("dataseries");
+
             isRecording = savedInstanceState.getBoolean("state");
+            xSeries= (XYSeries) savedInstanceState.getSerializable(X_RESULTS_KEY);
+            ySeries= (XYSeries) savedInstanceState.getSerializable(Y_RESULTS_KEY);
+            zSeries= (XYSeries) savedInstanceState.getSerializable(Z_RESULTS_KEY);
+            startTime= savedInstanceState.getInt(TIME_KEY);
+
         }
 
         PowerManager powerManager = (PowerManager) this.getActivity().getSystemService(Context.POWER_SERVICE);
@@ -73,17 +84,19 @@ public class AcceleroFragment extends Fragment implements SensorEventListener {
         sensorManager = (SensorManager) this.getActivity().getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        yResults = new ArrayList<>();
-        zResults = new ArrayList<>();
-        xResults = new ArrayList<>();
+
 
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("dataseries", dataset);
+       // outState.putSerializable("dataseries", dataset);
         outState.putBoolean("state", isRecording);
+        outState.putSerializable(X_RESULTS_KEY,xSeries);
+        outState.putSerializable(Y_RESULTS_KEY,ySeries);
+        outState.putSerializable(Z_RESULTS_KEY,zSeries);
+        outState.putInt(TIME_KEY,startTime);
     }
 
 
@@ -114,6 +127,10 @@ public class AcceleroFragment extends Fragment implements SensorEventListener {
         checkSensorsAndMemory();
         registrationManageButton = v.findViewById(R.id.registration_button);
         saveButton = v.findViewById(R.id.save_button);
+        if (isRecording){
+            registrationManageButton.setText(R.string.stop);
+            mWakeLock.acquire();
+        }
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -192,9 +209,9 @@ public class AcceleroFragment extends Fragment implements SensorEventListener {
                 xResults.add((double) ax);
 
                 Podometer podometer = new Podometer();
-                stepsTextView.setText("steps: " + String.valueOf(podometer.stepCount(xResults, yResults, zResults)));
+                stepsTextView.setText("steps: " + String.valueOf(podometer.stepCount(xSeries, ySeries, zSeries)));
 
-                Log.i(TAG, String.valueOf("steps  " + podometer.stepCount(xResults, yResults, zResults)));
+
                 if (isRecording) {
                     this.getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -220,10 +237,11 @@ public class AcceleroFragment extends Fragment implements SensorEventListener {
 
 
     private void chartInit() {
-        xSeries = new XYSeries("x");
-        ySeries = new XYSeries("y");
-        zSeries = new XYSeries("z");
-
+        if (xSeries ==null) {
+            xSeries = new XYSeries("x");
+            ySeries = new XYSeries("y");
+            zSeries = new XYSeries("z");
+        }
         XYSeriesRenderer xRenderer = new XYSeriesRenderer();
         xRenderer.setLineWidth(2);
         xRenderer.setColor(Color.BLUE);
@@ -249,7 +267,9 @@ public class AcceleroFragment extends Fragment implements SensorEventListener {
         multipleSeriesRenderer.setShowGrid(true);
         multipleSeriesRenderer.setBackgroundColor(Color.DKGRAY);
 
+
         dataset = new XYMultipleSeriesDataset();
+
         dataset.addSeries(xSeries);
         dataset.addSeries(ySeries);
         dataset.addSeries(zSeries);
